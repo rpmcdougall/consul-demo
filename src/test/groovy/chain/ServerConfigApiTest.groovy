@@ -24,7 +24,7 @@ class ServerConfigApiTest extends Specification {
     def setup() {
         consul = ConsulStarterBuilder.consulStarter().withHttpPort(8500).build().start()
         consulClientService = new ConsulClientService()
-        consulClient = consulClientService.getConsulClient(consul.httpPort)
+        consulClient = consulClientService.getConsulClient()
     }
 
     def cleanup() {

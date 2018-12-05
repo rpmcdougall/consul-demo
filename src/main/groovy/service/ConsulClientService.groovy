@@ -5,10 +5,8 @@ import com.google.inject.Inject
 
 class ConsulClientService {
 
-    Integer port
-
-    ConsulClient getConsulClient(Integer port) {
-        ConsulClient consulClient = new ConsulClient("localhost", port )
+    ConsulClient getConsulClient() {
+        ConsulClient consulClient = new ConsulClient("localhost" )
         return consulClient
     }
 

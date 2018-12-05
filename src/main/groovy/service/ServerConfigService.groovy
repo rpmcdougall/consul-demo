@@ -18,7 +18,7 @@ class ServerConfigService {
         this.consulClientService = consulClientService
     }
 
-    private ConsulClient consulClient = this.consulClientService.getConsulClient(8500)
+    private ConsulClient consulClient = this.consulClientService.getConsulClient()
 
 
     List<ServerConfig> getAllServerConfigs() {
