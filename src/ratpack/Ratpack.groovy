@@ -14,7 +14,7 @@ ratpack {
           render "ok"
       }
 
-      prefix("v1/server") {
+      prefix("v1/config") {
           all chain(registry.get(ServerConfigApi))
       }
   }

@@ -3,6 +3,8 @@ package chain
 import com.google.inject.Inject
 import ratpack.groovy.handling.GroovyChainAction
 import service.ServerConfigService
+import static ratpack.jackson.Jackson.json
+
 
 class ServerConfigApi extends GroovyChainAction {
 
@@ -17,14 +19,15 @@ class ServerConfigApi extends GroovyChainAction {
     @Override
     void execute() throws Exception {
 
-        path("/config") {
+        path("server") {
 
             byMethod {
                 get {
-                    serverConfigService.createServerConfig()
+
+                    render json(serverConfigService.createServerConfig())
                 }
                 post {
-                    serverConfigService.createServerConfig()
+                    render json(serverConfigService.createServerConfig())
                 }
             }
 

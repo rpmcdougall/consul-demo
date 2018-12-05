@@ -7,6 +7,8 @@ class ServerConfigService {
 
     List<ServerConfig> getAllServerConfigs() {
 
+
+
         List<ServerConfig> allServers = new ArrayList<>()
 
         return allServers
@@ -14,6 +16,8 @@ class ServerConfigService {
 
 
     ServerConfig getServerConfig(String fqdn) {
+
+
         return new ServerConfig(fqdn: "test.testing.com", ip: "10.1.1.1", role: "test server", ports: [80, 443])
     }
 
