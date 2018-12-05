@@ -3,6 +3,7 @@ package module
 import chain.ServerConfigApi
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes
+import service.ConsulClientService
 import service.ServerConfigService;
 
  class ServerConfigModule extends AbstractModule {
@@ -11,6 +12,7 @@ import service.ServerConfigService;
      protected void configure() {
          bind(ServerConfigService.class).in(Scopes.SINGLETON)
          bind(ServerConfigApi).in(Scopes.SINGLETON)
+         bind(ConsulClientService).in(Scopes.SINGLETON)
      }
 
  }

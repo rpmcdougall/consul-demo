@@ -1,21 +1,22 @@
 import chain.ServerConfigApi
 import module.ServerConfigModule
+import service.ConsulClientService
 
 import static ratpack.groovy.Groovy.ratpack
 
 ratpack {
-  bindings {
-    module ServerConfigModule
-  }
+    bindings {
+        module ServerConfigModule
+    }
 
-  handlers {
+    handlers {
 
-      get{
-          render "ok"
-      }
+        get {
+            render "ok"
+        }
 
-      prefix("v1/config") {
-          all chain(registry.get(ServerConfigApi))
-      }
-  }
+        prefix("v1/config") {
+            all chain(registry.get(ServerConfigApi))
+        }
+    }
 }
