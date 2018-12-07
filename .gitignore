@@ -69,3 +69,4 @@ fabric.properties
 *.ipr
 
 build/*
+.idea/*

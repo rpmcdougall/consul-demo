@@ -6,7 +6,8 @@ import com.google.inject.Inject
 class ConsulClientService {
 
     ConsulClient getConsulClient() {
-        ConsulClient consulClient = new ConsulClient("localhost" )
+        Integer clientPort = System.properties["consul.clientPort"] as Integer ?: 8500
+        ConsulClient consulClient = new ConsulClient("localhost", clientPort)
         return consulClient
     }
 

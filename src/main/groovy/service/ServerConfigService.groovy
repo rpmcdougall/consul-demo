@@ -1,8 +1,12 @@
 package service
 
 import com.ecwid.consul.v1.ConsulClient
+import com.ecwid.consul.v1.QueryParams
+import com.ecwid.consul.v1.Response
 import com.ecwid.consul.v1.kv.model.GetValue
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import model.ServerConfigKV
 import ratpack.jackson.Jackson
 import com.google.inject.Inject
 import model.ServerConfig
@@ -11,29 +15,35 @@ import ratpack.exec.Promise
 class ServerConfigService {
 
 
-    private ConsulClientService consulClientService = new ConsulClientService()
+    private final ConsulClientService consulClientService
 
     @Inject
     ServerConfigService(ConsulClientService consulClientService) {
         this.consulClientService = consulClientService
     }
 
-    private ConsulClient consulClient = this.consulClientService.getConsulClient()
+    def getAllServerConfigs() {
 
+        Response<List<GetValue>> allServers = consulClientService.consulClient.getKVValues("config/server")
 
-    List<ServerConfig> getAllServerConfigs() {
+        List<ServerConfigKV> cleanedConfigs = new ArrayList<>()
 
-        List<ServerConfig> allServers = new ArrayList<>()
+        allServers.value.each { kv ->
+            ServerConfigKV svkv = new ServerConfigKV()
+            svkv.key = kv.key
+            svkv.configDetail = new JsonSlurper().parseText(kv.decodedValue) as Map<String, Object>
+            cleanedConfigs.add(svkv)
+        }
 
-        return allServers
+        return cleanedConfigs
     }
 
 
-    String getServerConfig(String fqdn) {
+    def getServerConfig(String fqdn) {
 
-        def kv = consulClient.getKVValue(fqdn).value
+        def kv = consulClientService.consulClient.getKVValue("config/server/$fqdn").value
 
-        return kv.getDecodedValue()
+        return new JsonSlurper().parseText(kv.getDecodedValue())
     }
 
     Boolean deleteServerConfig(String fqdn) {
@@ -41,8 +51,7 @@ class ServerConfigService {
     }
 
     ServerConfig createServerConfig(ServerConfig req) {
-
-        consulClient.setKVValue("config/server/${req.fqdn}", JsonOutput.toJson(req).toString())
+        consulClientService.consulClient.setKVValue("config/server/${req.fqdn}", JsonOutput.toJson(req).toString())
 
         return req
     }

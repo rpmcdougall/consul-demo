@@ -6,33 +6,36 @@ import com.pszymczyk.consul.ConsulStarterBuilder
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.omg.CORBA.portable.Delegate
 import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import ratpack.test.ApplicationUnderTest
 import service.ConsulClientService
+import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 import ratpack.test.http.TestHttpClient
-import ratpack.http.client.RequestSpec
-
-class ServerConfigApiTest extends Specification {
-
-    private ConsulProcess consul
-    private ConsulClientService consulClientService
-    private ConsulClient consulClient
-
-    @Shared
-    ApplicationUnderTest aut = new GroovyRatpackMainApplicationUnderTest()
 
 
-    TestHttpClient client = aut.httpClient
 
+class ServerConfigApiTest extends  Specification{
 
+    // Declare objects created for each test
+    ConsulProcess consul
+    ApplicationUnderTest aut
+    TestHttpClient client
+    ConsulClient testConsulClient
 
     def setup() {
-        consul = ConsulStarterBuilder.consulStarter().withHttpPort(8500).build().start()
-        consulClientService = new ConsulClientService()
-        consulClient = consulClientService.getConsulClient()
+
+        //Create new app for each test so consul client port is reset
+        aut = new GroovyRatpackMainApplicationUnderTest()
+        client = aut.httpClient
+
+
+        //Build consul embedded server and client
+        consul = ConsulStarterBuilder.consulStarter().build().start()
+        System.properties["consul.clientPort"] = consul.httpPort
+        println System.properties["consul.clientPort"]
+        testConsulClient = new ConsulClient("localhost", consul.httpPort)
     }
 
     def cleanup() {
@@ -43,10 +46,12 @@ class ServerConfigApiTest extends Specification {
     def "will get kv pair"() {
 
         given:
-        consulClient.setKVValue("config/server/test.testing.com", JsonOutput.toJson([fqdn:"test.testing.com",ports:[514,8080] , role:"test", ip :"10.12.1.2"]))
+        println "running on port ${System.properties['consul.clientPort']}"
+
+        testConsulClient.setKVValue("config/server/test.testing.com", JsonOutput.toJson([fqdn:"test.testing.com",ports:[514,8080] , role:"test", ip :"10.12.1.2"]))
 
         when:
-        def result = new JsonSlurper().parseText(client.get("/v1/config/server").body.text)
+        def result = new JsonSlurper().parseText(client.get("/v1/config/server?fqdn=test.testing.com").body.text)
         then:
 
         assert result.fqdn == "test.testing.com"

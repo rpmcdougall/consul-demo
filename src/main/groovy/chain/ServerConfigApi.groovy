@@ -23,11 +23,15 @@ class ServerConfigApi extends GroovyChainAction {
     @Override
     void execute() throws Exception {
 
-
+        //Server Root
         path("server") {
             byMethod {
                 get {
-                    render serverConfigService.getServerConfig("config/server/test.testing.com")
+                    if(request.queryParams.containsKey("fqdn")) {
+                        render json(serverConfigService.getServerConfig(request.queryParams["fqdn"]))
+                    }
+
+                    render json(serverConfigService.getAllServerConfigs())
                 }
                 post {
 
@@ -37,6 +41,17 @@ class ServerConfigApi extends GroovyChainAction {
                         render json(serverConfigService.createServerConfig(srv))
 
                     }
+                }
+            }
+
+        }
+
+        //fqdn Path Token
+        path("server?:fqdn") {
+            String fqdn = request.getQueryParams()['fqdn']
+            byMethod {
+                get {
+                    render json(serverConfigService.getServerConfig(fqdn))
                 }
             }
 
