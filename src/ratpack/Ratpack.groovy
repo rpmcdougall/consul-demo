@@ -8,14 +8,6 @@ ratpack {
 
     bindings {
         module ServerConfigModule
-
-
-//        bindInstance Service, new Service() {
-//            @Override
-//            void onStart(StartEvent event) throws Exception {
-//                System.properties['consul.clientPort'] = 8500
-//            }
-//        }
     }
 
         handlers {
