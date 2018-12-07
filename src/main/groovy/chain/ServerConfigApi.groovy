@@ -30,22 +30,21 @@ class ServerConfigApi extends GroovyChainAction {
 
                 delete {
                     if (request.queryParams.containsKey("fqdn")) {
-                        Boolean deleteStatus = serverConfigService.deleteServerConfig(request.queryParams["fqdn"])
-                        if (!deleteStatus) {
+                        if (!serverConfigService.deleteServerConfig(request.queryParams["fqdn"])) {
                             response.status(400).send("application/json",  '{"error": "Failed to delete KV")')
-
-                        }
-                    }
-                    else
-                        response.status(400).send("application/json",  '{"error": "Missing required FQDN as query parameter")')
+                        } else
+                            response.status(204).send()
+                    } else
+                        response.status(400).send("application/json",  '{"error": "Missing required query parameter ?fqdn"}')
                 }
 
                 get {
                     if(request.queryParams.containsKey("fqdn")) {
                         render json(serverConfigService.getServerConfig(request.queryParams["fqdn"]))
                     }
-
-                    render json(serverConfigService.getAllServerConfigs())
+                    else {
+                        render json(serverConfigService.getAllServerConfigs())
+                    }
                 }
                 post {
 
