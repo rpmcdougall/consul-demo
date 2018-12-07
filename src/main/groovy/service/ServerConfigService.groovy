@@ -1,5 +1,6 @@
 package service
 
+import com.ecwid.consul.ConsulException
 import com.ecwid.consul.v1.ConsulClient
 import com.ecwid.consul.v1.QueryParams
 import com.ecwid.consul.v1.Response
@@ -47,6 +48,12 @@ class ServerConfigService {
     }
 
     Boolean deleteServerConfig(String fqdn) {
+        try {
+            consulClientService.consulClient.deleteKVValue("config/server/$fqdn")
+        } catch(ConsulException e) {
+            return false
+        }
+
         return true
     }
 
