@@ -53,6 +53,7 @@ class ServerConfigApiTest extends  Specification{
         when:
         def result = new JsonSlurper().parseText(client.get("/v1/config/server?fqdn=test.testing.com").body.text)
         then:
+        println("hello!")
 
         assert result.fqdn == "test.testing.com"
     }
